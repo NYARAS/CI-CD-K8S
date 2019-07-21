@@ -1,0 +1,57 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: wecs/circle-ci-gcloud-node:0.0.2
+    working_directory: ~/workspace
+    environment:
+      DEPLOYMENT_NAME: gce-calvine
+      PROJECT_ID: ansible-gce-demo-247311
+      CLUSTER_NAME: ansible-gce-demo
+      CLUSTER_NAME_STAG: ansible-calvine-demo-stag
+      CLOUDSDK_COMPUTE_ZONE: us-central1-c	
+      CONTAINER_NAME: ansible-gce-demo
+      IMAGE: node-app
+      REG_ID: ansible-gce-demo
+      REG_ID_PROD: ansible-gce-demo-prod
+      IMG_TAG: 0.0.2
+      PROJECT_NAME: ansible-gce-demo
+      DEPLOYMENT_ENVIRONMENT: staging
+    steps:
+      - checkout
+      - setup_remote_docker
+      - restore_cache:
+          keys:
+          - v1-dependencies-{{ checksum "package.json" }}
+          - v1-dependencies-
+
+      - run:
+          name: Install node packages
+          command: |
+            npm install
+      
+      - run:
+          name: Start app
+          command: |
+            npm start &
+      - run:
+          name: Run tests
+          command: |
+            npm test
+      - restore_cache:
+          keys:
+          - v1-dependencies-{{ checksum "package.json" }}
+          - v1-dependencies-
+
+      - save_cache:
+          paths:
+            - node_modules
+          key: v1-dependencies-{{ checksum "package.json" }}
+      
+      - run:
+          name: Build and Deploy
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "master" ]; then
+              ./deployment.sh
+            fi  
+  
