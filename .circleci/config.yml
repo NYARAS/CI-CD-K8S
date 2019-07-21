@@ -10,7 +10,7 @@ jobs:
       CLUSTER_NAME: ansible-gce-demo
       CLUSTER_NAME_STAG: ansible-calvine-demo-stag
       CLOUDSDK_COMPUTE_ZONE: us-central1-c	
-      CONTAINER_NAME: ansible-gce-demo
+      CONTAINER_NAME: ansible-gce-demo-247311
       IMAGE: node-app
       REG_ID: ansible-gce-demo
       REG_ID_PROD: ansible-gce-demo-prod
